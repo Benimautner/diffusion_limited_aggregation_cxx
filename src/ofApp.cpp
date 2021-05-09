@@ -81,7 +81,7 @@ void ofApp::update(){
 //--------------------------------------------------------------
 void ofApp::draw(){
     for(auto node : innocent_vector) {
-        if(node.checking)
+        if(node.checking && debug_enabled)
             ofSetColor(0, 255, 0);
         else
             ofSetColor(255);
@@ -91,14 +91,22 @@ void ofApp::draw(){
     for(auto node : evil_vector) {
         ofDrawCircle(node.pos[0], node.pos[1], radius);
     }
-    ofNoFill();
-    ofDrawCircle(first_node.pos[0], first_node.pos[1], sqrt(max_rad_of_tree));
-    ofFill();
+    if(debug_enabled) {
+        ofNoFill();
+        ofDrawCircle(first_node.pos[0], first_node.pos[1], sqrt(max_rad_of_tree));
+        ofFill();
+    }
 }
 
 //--------------------------------------------------------------
 void ofApp::keyPressed(int key){
-    cout << "Key: " << key << endl;
+    switch(key) {
+        case(0x64): // d
+            debug_enabled = !debug_enabled;
+            break;
+        default:
+            cout << "Key: " << key << endl;
+    }
 }
 
 //--------------------------------------------------------------

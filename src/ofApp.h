@@ -25,6 +25,7 @@ private:
     vector<node_t> evil_vector;
     node_t first_node;
 
+    bool debug_enabled = false;
     float radius = 6;
     float min_dist = radius * radius * 4;
     int n_nodes = 2000;
