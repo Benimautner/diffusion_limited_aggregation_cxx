@@ -17,6 +17,7 @@ include(linux64)
 # ===================== Source Files =====================
 set(SOURCE_FILES
         ${ADDON_SOURCE_FILES}
+        libs/ThreadPool/ThreadPool.h
         src/main.cpp
         src/ofApp.cpp)
 

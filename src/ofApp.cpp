@@ -9,19 +9,23 @@ void ofApp::setup() {
     ofSetWindowPosition(ofGetScreenWidth() / 4, ofGetScreenHeight() / 4);
     ofSetFrameRate(60);
 
+    first_node.id = 0;
     first_node.pos[0] = ofGetWidth() / 2.0f;
     first_node.pos[1] = ofGetHeight() / 2.0f;
     first_node.stuck = true;
     evil_vector.emplace_back(first_node);
     innocent_vector.reserve(n_nodes);
-    for (int j = 0; j < n_nodes; ++j) {
+    for (int j = 1; j < n_nodes; ++j) {
         node_t new_node;
 
+        new_node.id = j;
         new_node.pos[0] = ofRandomWidth();
         new_node.pos[1] = ofRandomHeight();
 
         innocent_vector.emplace_back(new_node);
     }
+
+    pool = new ThreadPool(thread::hardware_concurrency() - 2);
 }
 //--------------------------------------------------------------
 
@@ -39,6 +43,8 @@ void ofApp::update(){
     const auto win_height = (float) ofGetHeight();
     int num_checking = 0;
     for (int j = 0; j < iterations; ++j) {
+        vector<future<int>> thread_results;
+
         for (auto &node : innocent_vector) {
             if(node.stuck)
                 continue;
@@ -58,14 +64,26 @@ void ofApp::update(){
             if(dstSqr(node.pos, first_node.pos) > max_rad_of_tree + min_dist * min_dist)
                 continue;
             node.checking = true;
-            for (auto &other : evil_vector) {
-                if(dstSqr(node.pos, other.pos) < min_dist) {
-                    node.stuck = true;
-                    node.to_be_removed = true;
-                    evil_vector.emplace_back(node);
-                    max_rad_of_tree = MAX(max_rad_of_tree, dstSqr(node.pos, first_node.pos) + radius * 2);
+
+            auto handle_evil_vectors = [&] () {
+                for (auto &other : evil_vector) {
+                    if(other.id == -1 || node.id == -1)
+                        continue;
+                    if(dstSqr(node.pos, other.pos) < min_dist + radius) {
+                        node.stuck = true;
+                        node.to_be_removed = true;
+                        evil_vector_mutex.lock();
+                        evil_vector.emplace_back(node);
+                        max_rad_of_tree = MAX(max_rad_of_tree, dstSqr(node.pos, first_node.pos) + radius * 2);
+                        evil_vector_mutex.unlock();
+                    }
                 }
-            }
+                return 0;
+            };
+            thread_results.push_back(pool->enqueue(handle_evil_vectors));
+        }
+        for(auto & thread_result : thread_results) {
+            thread_result.wait();
         }
     }
 
