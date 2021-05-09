@@ -29,7 +29,7 @@ private:
     float min_dist = radius * radius * 4;
     int n_nodes = 2000;
     int iterations = 10;
-    float rand_range = 3;
+    float rand_range = radius;
     float max_rad_of_tree = min_dist * min_dist;
 
 public:
