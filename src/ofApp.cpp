@@ -1,6 +1,5 @@
 #include "ofApp.h"
 
-#define N_ARRAY(arr) sizeof(arr)/sizeof(arr[0])
 
 //--------------------------------------------------------------
 void ofApp::setup() {
@@ -21,7 +20,7 @@ void ofApp::setup() {
     int ctr = 0;
     for(int x = 0; x < horizontal_cells; x++) {
         for (int y = 0; y < vertical_cells; ++y) {
-            cell_t* new_cell = new cell_t;
+            auto new_cell = make_shared<cell_t>();
             new_cell->id = ctr;
             new_cell->pos[0] = (float) x * horizontal_cell_size;
             new_cell->pos[1] = (float) y * vertical_cell_size;
@@ -34,24 +33,24 @@ void ofApp::setup() {
         }
     }
 
-    first_node = new node_t;
+    first_node = make_shared<node_t>();
     first_node->id = 0;
-    first_node->pos[0] = ofGetWidth() / 2.0f;
-    first_node->pos[1] = ofGetHeight() / 2.0f;
+    first_node->pos[0] = (float) ofGetWidth() / 2.0f;
+    first_node->pos[1] = (float) ofGetHeight() / 2.0f;
     first_node->stuck = true;
 
     cell_mgr.add_node(first_node);
 
     innocent_vector.reserve(n_nodes);
     for (int j = 1; j < n_nodes; ++j) {
-        node_t* new_node = new node_t;
+        auto new_node = make_shared<node_t>();
         new_node->id = j;
         new_node->pos[0] = ofRandomWidth();
         new_node->pos[1] = ofRandomHeight();
         innocent_vector.emplace_back(new_node);
     }
 
-    pool = new ThreadPool(thread::hardware_concurrency() - 2);
+    //pool = new ThreadPool(thread::hardware_concurrency() - 2);
 }
 //--------------------------------------------------------------
 
@@ -71,8 +70,7 @@ void ofApp::update(){
     for (int j = 0; j < iterations; ++j) {
         vector<future<int>> thread_results;
 
-        for (int i = 0; i < innocent_vector.size(); i++) {
-            node_t* node = innocent_vector[i];
+        for (auto node : innocent_vector) {
             if(node->stuck)
                 continue;
             node->checking = false;
@@ -102,7 +100,7 @@ void ofApp::update(){
                 // int cell_vector_len = cell_vector_part.size();
 
                 for (int i = 0; i < cell_vector_len; i++) {
-                    node_t* other = cell_vector_part[i];
+                    auto other = cell_vector_part[i];
                     if(other == nullptr) continue;
                     if(other->id == -1 || node->id == -1 || node->to_be_removed)
                         continue;
@@ -134,14 +132,13 @@ void ofApp::update(){
     }
     // cout << "Innocent length: " << innocent_vector.size() << endl << "Evil length: " << evil_vector.size() << endl;
     if(innocent_vector.size() < n_nodes) {
-        node_t* new_node = new node_t;
+        auto new_node = make_shared<node_t>();
         new_node->id = 2;
         new_node->pos[0] = ofRandomWidth();
         new_node->pos[1] = ofRandomHeight();
         innocent_vector.emplace_back(new_node);
     }
     if(innocent_vector.empty()) {
-        done = true;
         if(duration == duration_t(chrono::milliseconds(0))) {
             end_time = custom_clock::now();
             duration = end_time - start_time;
@@ -155,7 +152,7 @@ void ofApp::update(){
 
 //--------------------------------------------------------------
 void ofApp::draw(){
-    for(auto node : innocent_vector) {
+    for(const auto& node : innocent_vector) {
         if(node->checking && debug_enabled)
             ofSetColor(0, 255, 0);
         else
@@ -163,7 +160,7 @@ void ofApp::draw(){
         ofDrawCircle(node->pos[0], node->pos[1], radius);
     }
     ofSetColor(255,0,0);
-    for(auto node : cell_mgr.get_all_nodes()) {
+    for(const auto& node : cell_mgr.get_all_nodes()) {
         ofDrawCircle(node->pos[0], node->pos[1], radius);
     }
     if(debug_enabled) {
@@ -186,6 +183,9 @@ void ofApp::keyPressed(int key){
     switch(key) {
         case(0x64): // d
             debug_enabled = !debug_enabled;
+            break;
+        case(0x71):
+            ofExit();
             break;
         default:
             cout << "Key: " << key << endl;

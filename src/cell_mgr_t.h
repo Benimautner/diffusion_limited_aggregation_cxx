@@ -33,12 +33,12 @@ struct cell_t {
     int pos_in_grid[2] = {0,0};
     float pos[2] = {0,0};
     float size[2] = {0,0};
-    vector<node_t*> evil_vector_part;
+    vector<shared_ptr<node_t>> evil_vector_part;
 };
 
 class cell_mgr_t {
 private:
-    vector<cell_t*> cell_vector;
+    vector<shared_ptr<cell_t>> cell_vector;
     int width;
     int height;
     const vector<vector<int>> indices_to_check = {{-1,-1}, {0, -1}, {1, -1},
@@ -49,12 +49,12 @@ public:
     cell_mgr_t();
 
     int get_id_by_position(pos_t pos[]);
-    vector<node_t*> get_nodes_to_check_by_position(pos_t pos[], int& len);
+    vector<shared_ptr<node_t>> get_nodes_to_check_by_position(pos_t pos[], int& len);
     void add_cell(float x, float y, float width, float height);
-    vector<cell_t*> get_cell_vector();
+    vector<shared_ptr<cell_t>> get_cell_vector();
 
 
-    vector<node_t*> get_all_nodes();
+    vector<shared_ptr<node_t>> get_all_nodes();
 
     int get_index(int x, int y);
 
@@ -62,10 +62,10 @@ public:
 
     void set_height(int height);
 
-    bool get_cell_by_position(pos_t *pos, cell_t*& return_cell);
+    bool get_cell_by_position(pos_t *pos, shared_ptr<cell_t>& return_cell);
 
-    void add_cell(cell_t *cell);
-    void add_node(node_t *node);
+    void add_cell(const shared_ptr<cell_t>& cell);
+    void add_node(const shared_ptr<node_t>& node);
 };
 
 

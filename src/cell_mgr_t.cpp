@@ -21,11 +21,11 @@ void cell_mgr_t::set_height(int height) {
 }
 
 
-vector<cell_t*> cell_mgr_t::get_cell_vector() {
+vector<shared_ptr<cell_t>> cell_mgr_t::get_cell_vector() {
     return cell_vector;
 }
 
-bool cell_mgr_t::get_cell_by_position(pos_t *pos, cell_t*& return_cell) {
+bool cell_mgr_t::get_cell_by_position(pos_t *pos, shared_ptr<cell_t>& return_cell) {
 
     float x_pos_scale_0_1 = pos[0] / (float)ofGetWidth();
     float y_pos_scale_0_1 = pos[1] / (float)ofGetHeight();
@@ -51,10 +51,10 @@ bool cell_mgr_t::get_cell_by_position(pos_t *pos, cell_t*& return_cell) {
     return false;
 }
 
-vector<node_t*> cell_mgr_t::get_nodes_to_check_by_position(pos_t *pos, int& len) {
-    auto* containing_cell = new cell_t;
-    vector<cell_t*> cells_to_check;
-    vector<node_t*> return_vector;
+vector<shared_ptr<node_t>> cell_mgr_t::get_nodes_to_check_by_position(pos_t *pos, int& len) {
+    auto containing_cell = make_shared<cell_t>();
+    vector<shared_ptr<cell_t>> cells_to_check;
+    vector<shared_ptr<node_t>> return_vector;
     bool result = get_cell_by_position(pos, containing_cell);
     if(!result) {
         return return_vector;
@@ -84,8 +84,8 @@ vector<node_t*> cell_mgr_t::get_nodes_to_check_by_position(pos_t *pos, int& len)
     return return_vector;
 }
 
-vector<node_t*> cell_mgr_t::get_all_nodes() {
-    vector<node_t*> return_vector;
+vector<shared_ptr<node_t>> cell_mgr_t::get_all_nodes() {
+    vector<shared_ptr<node_t>> return_vector;
     for (const auto& cell : cell_vector) {
         for(const auto& node : cell->evil_vector_part)
             return_vector.emplace_back(node);
@@ -97,11 +97,11 @@ void cell_mgr_t::add_cell(float x, float y, float width, float height) {
 
 }
 
-void cell_mgr_t::add_cell(cell_t* cell) {
+void cell_mgr_t::add_cell(const shared_ptr<cell_t>& cell) {
     cell_vector.emplace_back(cell);
 }
 
-void cell_mgr_t::add_node(node_t* node) {
+void cell_mgr_t::add_node(const shared_ptr<node_t>& node) {
     auto pos = node->pos;
     for (auto& cell : cell_vector) {
         if(pos[0] > cell->pos[0] && pos[0] <= cell->pos[0] + cell->size[0] &&

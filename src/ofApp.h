@@ -23,10 +23,10 @@ private:
     cell_mgr_t cell_mgr;
     ofTrueTypeFont font;
 
-    vector<node_t*> innocent_vector;
+    vector<shared_ptr<node_t>> innocent_vector;
     // vector<node_t> evil_vector;
     std::mutex evil_vector_mutex;
-    node_t* first_node;
+    shared_ptr<node_t> first_node;
 
     const int n_nodes = 600;
     const int iterations = 200;
