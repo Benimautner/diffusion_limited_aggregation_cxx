@@ -19,7 +19,7 @@ set(SOURCE_FILES
         ${ADDON_SOURCE_FILES}
         libs/ThreadPool/ThreadPool.h
         src/main.cpp
-        src/ofApp.cpp)
+        src/ofApp.cpp src/cell_mgr_t.cpp src/cell_mgr_t.h)
 
 
 # ===================== System Frameworks =====================

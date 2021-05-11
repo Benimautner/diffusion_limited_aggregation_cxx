@@ -5,37 +5,43 @@
 
 #include <vector>
 #include <random>
+#include <chrono>
 #include "../libs/ThreadPool/ThreadPool.h"
+#include "cell_mgr_t.h"
+
 using namespace std;
 
-struct node_t {
-    int id = -1;
-    float pos[2] = {0,0};
-    float vel[2] = {0,0};
+typedef chrono::high_resolution_clock custom_clock;
+typedef chrono::duration<float, std::milli> duration_t;
 
-    bool stuck = false;
-    bool to_be_removed = false;
-    bool checking = false;
-};
 
 class ofApp : public ofBaseApp{
 
 private:
 
     ThreadPool *pool;
+    cell_mgr_t cell_mgr;
+    ofTrueTypeFont font;
 
-    vector<node_t> innocent_vector;
-    vector<node_t> evil_vector;
+    vector<node_t*> innocent_vector;
+    // vector<node_t> evil_vector;
     std::mutex evil_vector_mutex;
-    node_t first_node;
+    node_t* first_node;
+
+    const int n_nodes = 600;
+    const int iterations = 200;
+    const int horizontal_cells = 80;
+    const int vertical_cells = 38;
+    const float radius = 8;
 
     bool debug_enabled = false;
-    float radius = 4;
+    bool done = false;
     float min_dist = radius * radius * 4;
-    int n_nodes = 6000;
-    int iterations = 20;
     float rand_range = radius / 2;
     float max_rad_of_tree = min_dist * min_dist;
+    custom_clock::time_point start_time;
+    custom_clock::time_point end_time;
+    duration_t duration = chrono::milliseconds(0);
 
 public:
     void setup();
