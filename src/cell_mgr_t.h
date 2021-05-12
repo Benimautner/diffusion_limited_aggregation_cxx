@@ -20,6 +20,7 @@ struct node_t {
     int id = -1;
     float pos[2] = {0,0};
     float vel[2] = {0,0};
+    float radius = 1;
 
     bool stuck = false;
     bool to_be_removed = false;
@@ -66,6 +67,8 @@ public:
 
     void add_cell(const shared_ptr<cell_t>& cell);
     void add_node(const shared_ptr<node_t>& node);
+
+    void reset();
 };
 
 

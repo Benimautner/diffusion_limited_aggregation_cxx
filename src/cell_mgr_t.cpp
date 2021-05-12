@@ -77,10 +77,8 @@ vector<shared_ptr<node_t>> cell_mgr_t::get_nodes_to_check_by_position(pos_t *pos
     for (auto& cell : cells_to_check) {
         return_vector.reserve(cell->evil_vector_part.size());
         return_vector.insert(return_vector.end(), cell->evil_vector_part.begin(), cell->evil_vector_part.end());
-
     }
     len = return_vector.size();
-    cells_to_check.clear();
     return return_vector;
 }
 
@@ -109,6 +107,10 @@ void cell_mgr_t::add_node(const shared_ptr<node_t>& node) {
             cell->evil_vector_part.emplace_back(node);
         }
     }
+}
+
+void cell_mgr_t::reset() {
+    cell_vector.clear();
 }
 
 cell_mgr_t::cell_mgr_t() = default;
