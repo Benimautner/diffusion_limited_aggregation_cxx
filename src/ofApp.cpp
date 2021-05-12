@@ -19,7 +19,9 @@ void ofApp::setup() {
     gui.add(slider_horizontal_cells.setup("Horizontal Cells",config.horizontal_cells,4,100));
     gui.add(slider_vertical_cells.setup("Vertical Cells",config.vertical_cells,4,100));
     gui.add(slider_radius.setup("Radius",config.radius,1,10));
+    gui.add(toggle_enable_respawn.setup("Enable respawning"));
     gui.add(button_start.setup("Start"));
+
 
 }
 //--------------------------------------------------------------
@@ -43,7 +45,7 @@ void ofApp::update(){
         for (int j = 0; j < config.iterations; ++j) {
             vector<future<int>> thread_results;
 
-            for (auto node : innocent_vector) {
+            for (const auto& node : innocent_vector) {
                 if (node->stuck)
                     continue;
                 node->checking = false;
@@ -63,20 +65,13 @@ void ofApp::update(){
             if(dstSqr(node->pos, first_node->pos) > max_rad_of_tree + pow(node->radius * first_node->radius, 2) * 4)
                 continue;
             node->checking = true;
-            auto handle_evil_vectors = [&] () {
-                //vector<node_t> cell_vector_part;
+            //auto handle_evil_vectors = [&] () {
+
                 int cell_vector_len = 0;
-                //vector<node_t*> cell_vector_part;
                 auto cell_vector_part = cell_mgr.get_nodes_to_check_by_position(node->pos, cell_vector_len);
 
-                // auto cell_vector_part = cell_mgr.get_all_nodes();
-                // int cell_vector_len = cell_vector_part.size();
-
                     for (int i = 0; i < cell_vector_len; i++) {
-                        auto other = cell_vector_part[i];
-                        if (other == nullptr) continue;
-                        if (other->id == -1 || node->id == -1 || node->to_be_removed)
-                            continue;
+                        const auto& other = cell_vector_part[i];
                         if (dstSqr(node->pos, other->pos) < node->radius * other->radius * 4 + node->radius * 4) {
                             cout << "Adding node: " << node->id << endl;
                             evil_vector_mutex.lock();
@@ -87,9 +82,10 @@ void ofApp::update(){
                             evil_vector_mutex.unlock();
                         }
                     }
-                    return 0;
-                };
-                handle_evil_vectors();
+                //    return 0;
+                //};
+                //handle_evil_vectors();
+
                 //thread_results.push_back(pool->enqueue(handle_evil_vectors));
             }
             //for(auto & thread_result : thread_results) {

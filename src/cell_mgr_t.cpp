@@ -54,6 +54,8 @@ bool cell_mgr_t::get_cell_by_position(pos_t *pos, shared_ptr<cell_t>& return_cel
 vector<shared_ptr<node_t>> cell_mgr_t::get_nodes_to_check_by_position(pos_t *pos, int& len) {
     auto containing_cell = make_shared<cell_t>();
     vector<shared_ptr<cell_t>> cells_to_check;
+    cells_to_check.reserve(9);
+
     vector<shared_ptr<node_t>> return_vector;
     bool result = get_cell_by_position(pos, containing_cell);
     if(!result) {

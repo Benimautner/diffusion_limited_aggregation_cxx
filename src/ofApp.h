@@ -14,6 +14,7 @@ using namespace std;
 typedef chrono::high_resolution_clock custom_clock;
 typedef chrono::duration<float, std::milli> duration_t;
 
+//TODO: add useful presets to gui
 struct config_t {
     int n_nodes = 6000;
     int iterations = 10;
